@@ -10,7 +10,7 @@ const OPERATIOR_BUTTONS = {
   "/": (a, b) => a / b,
   "=": (a, b) => b,
   sign: (a, b) => -b,
-  sq: (a, b) => b ^ 2,
+  sq: (a, b) => b * b,
   sqrt: (a, b) => Math.sqrt(b),
 };
 const BUTTON_GOUPS = [
@@ -97,22 +97,15 @@ export default class App extends PureComponent {
       operator: inputOperator,
     });
   };
-  onSpacialOperatorClick = (e, inputOperator) => {
-    const { value, valueToDisplay, operator } = this.state;
-    const inputValue = parseFloat(valueToDisplay); // get previous enterd value eg A
-    if (valueToDisplay !== "0") {
-      // when a+b-
-      const currentValue = value || 0;
-      const newValue = OPERATIOR_BUTTONS[operator](currentValue, inputValue);
-      this.setState({
-        value: newValue,
-        valueToDisplay: newValue + "",
-      });
-    }
-
+  onSpacialOperatorClick = async (e, inputOperator) => {
+    await this.onOperatorClick(e, "=");
+    const { value, valueToDisplay } = this.state;
+    const inputValue = parseFloat(valueToDisplay);
+    const currentValue = value || 0;
+    const newValue = OPERATIOR_BUTTONS[inputOperator](currentValue, inputValue);
     this.setState({
-      waitingForOperand: true,
-      operator: inputOperator,
+      value: newValue,
+      valueToDisplay: newValue + "",
     });
   };
   renderButtons = (buttonMap) => {
@@ -174,9 +167,10 @@ export default class App extends PureComponent {
                 return (
                   <Button
                     label={buttonKey}
-                    onClick={this.onOperatorClick}
+                    onClick={this.onSpacialOperatorClick}
                     className="button"
                     key={buttonKey}
+                    value={buttonKey}
                   ></Button>
                 );
               })
