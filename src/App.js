@@ -9,6 +9,9 @@ const OPERATIOR_BUTTONS = {
   "*": (a, b) => a + b,
   "/": (a, b) => a / b,
   "=": (a, b) => b,
+  sign: (a, b) => -b,
+  sq: (a, b) => b ^ 2,
+  sqrt: (a, b) => Math.sqrt(b),
 };
 const BUTTON_GOUPS = [
   { "1": null },
@@ -28,6 +31,8 @@ const BUTTON_GOUPS = [
   { "=": OPERATIOR_BUTTONS["="] },
   { "/": OPERATIOR_BUTTONS["/"] },
 ];
+
+const SCIENTIFIC_MODE_BUTTONS = [{ sign: null }, { sq: null }, { sqrt: null }];
 
 export default class App extends PureComponent {
   constructor(props) {
@@ -66,10 +71,9 @@ export default class App extends PureComponent {
     }
     console.log(this.state);
   };
-  onOperatorClick = (e, nextOperator) => {
+  onOperatorClick = (e, inputOperator) => {
     // calculate  previous input digit and previous operator
     // and set inputOperator to operator state for next calculation
-    console.log(this.state);
     const { value, valueToDisplay, operator } = this.state;
     const inputValue = parseFloat(valueToDisplay); // get previous enterd value eg A
 
@@ -82,7 +86,6 @@ export default class App extends PureComponent {
       // when a+b-
       const currentValue = value || 0;
       const newValue = OPERATIOR_BUTTONS[operator](currentValue, inputValue);
-      debugger;
       this.setState({
         value: newValue,
         valueToDisplay: newValue + "",
@@ -91,11 +94,29 @@ export default class App extends PureComponent {
 
     this.setState({
       waitingForOperand: true,
-      operator: nextOperator,
+      operator: inputOperator,
+    });
+  };
+  onSpacialOperatorClick = (e, inputOperator) => {
+    const { value, valueToDisplay, operator } = this.state;
+    const inputValue = parseFloat(valueToDisplay); // get previous enterd value eg A
+    if (valueToDisplay !== "0") {
+      // when a+b-
+      const currentValue = value || 0;
+      const newValue = OPERATIOR_BUTTONS[operator](currentValue, inputValue);
+      this.setState({
+        value: newValue,
+        valueToDisplay: newValue + "",
+      });
+    }
+
+    this.setState({
+      waitingForOperand: true,
+      operator: inputOperator,
     });
   };
   renderButtons = (buttonMap) => {
-    return BUTTON_GOUPS.map((buttonObj) => {
+    return buttonMap.map((buttonObj) => {
       const buttonKey = Object.keys(buttonObj)[0];
       if (buttonObj[buttonKey]) {
         // check if  operator button
@@ -131,16 +152,36 @@ export default class App extends PureComponent {
       }
     });
   };
+  toggleMode = () => {
+    const { isSciMode } = this.state;
+    this.setState({ isSciMode: !isSciMode });
+  };
+
   render() {
     return (
       <div className="App">
-        <Output className="output" value={this.state.valueToDisplay}></Output>
-        <div className="numericContainer">
+        <Output
+          className="output"
+          value={this.state.valueToDisplay}
+          isSciMode={this.state.isSciMode}
+          onChangeMode={this.toggleMode}
+        ></Output>
+        <div className="buttonsContainer">
           {[this.renderButtons(BUTTON_GOUPS)]}
+          {this.state.isSciMode
+            ? SCIENTIFIC_MODE_BUTTONS.map((buttonObj) => {
+                const buttonKey = Object.keys(buttonObj)[0];
+                return (
+                  <Button
+                    label={buttonKey}
+                    onClick={this.onOperatorClick}
+                    className="button"
+                    key={buttonKey}
+                  ></Button>
+                );
+              })
+            : null}
         </div>
-        <div className="numericContainer">{}</div>
-        <div className="numericContainer">{}</div>
-        <div>{}</div>
       </div>
     );
   }
