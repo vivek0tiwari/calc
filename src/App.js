@@ -5,7 +5,7 @@ import { Button } from "./components/Button";
 const OPERATIOR_BUTTONS = {
   "+": (a, b) => a + b,
   "-": (a, b) => a - b,
-  "*": (a, b) => a + b,
+  "*": (a, b) => a * b,
   "/": (a, b) => a / b,
   "=": (a, b) => b,
   sign: (a, b) => -b,
