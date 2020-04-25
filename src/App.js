@@ -1,5 +1,4 @@
 import React, { PureComponent } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { Output } from "./containers/Output";
 import { Button } from "./components/Button";
@@ -42,6 +41,7 @@ export default class App extends PureComponent {
       value: null,
       operator: null,
       waitingForOperand: false,
+      theme: "light",
     };
   }
   clearAll = () => {
@@ -98,83 +98,76 @@ export default class App extends PureComponent {
     });
   };
   onSpacialOperatorClick = async (e, inputOperator) => {
-    await this.onOperatorClick(e, "=");
-    const { value, valueToDisplay } = this.state;
+    const { valueToDisplay } = this.state;
     const inputValue = parseFloat(valueToDisplay);
-    const currentValue = value || 0;
-    const newValue = OPERATIOR_BUTTONS[inputOperator](currentValue, inputValue);
+    const newValue = OPERATIOR_BUTTONS[inputOperator](null, inputValue);
     this.setState({
-      value: newValue,
       valueToDisplay: newValue + "",
     });
   };
-  renderButtons = (buttonMap) => {
+  renderButton = (buttonKey, onClick) => {
+    return (
+      <Button
+        label={buttonKey}
+        key={buttonKey}
+        className={`${this.state.theme} button`}
+        value={buttonKey}
+        onClick={onClick}
+      ></Button>
+    );
+  };
+  renderAllButtons = (buttonMap) => {
     return buttonMap.map((buttonObj) => {
       const buttonKey = Object.keys(buttonObj)[0];
+
       if (buttonObj[buttonKey]) {
         // check if  operator button
-        return (
-          <Button
-            label={buttonKey}
-            key={buttonKey}
-            onClick={this.onOperatorClick}
-            className="button"
-            value={buttonKey}
-          ></Button>
-        );
+        return this.renderButton(buttonKey, this.onOperatorClick);
       } else if (buttonKey === "c") {
         // check if clear button
-        return (
-          <Button
-            label={buttonKey}
-            onClick={this.clearAll}
-            className="button"
-            key={buttonKey}
-          ></Button>
-        );
+        return this.renderButton(buttonKey, this.clearAll);
       } else {
-        return (
-          <Button
-            label={buttonKey}
-            key={buttonKey}
-            onClick={this.onNumberClick}
-            className="button"
-            value={buttonKey}
-          ></Button>
-        );
+        return this.renderButton(buttonKey, this.onNumberClick);
       }
     });
   };
-  toggleMode = () => {
+  toggleMode = (e) => {
     const { isSciMode } = this.state;
     this.setState({ isSciMode: !isSciMode });
   };
-
+  onThemeChange = (e) => {
+    const { theme } = this.state;
+    this.setState({ theme: theme === "light" ? "dark" : "light" });
+  };
   render() {
     return (
-      <div className="App">
-        <Output
-          className="output"
-          value={this.state.valueToDisplay}
-          isSciMode={this.state.isSciMode}
-          onChangeMode={this.toggleMode}
-        ></Output>
-        <div className="buttonsContainer">
-          {[this.renderButtons(BUTTON_GOUPS)]}
-          {this.state.isSciMode
-            ? SCIENTIFIC_MODE_BUTTONS.map((buttonObj) => {
-                const buttonKey = Object.keys(buttonObj)[0];
-                return (
-                  <Button
-                    label={buttonKey}
-                    onClick={this.onSpacialOperatorClick}
-                    className="button"
-                    key={buttonKey}
-                    value={buttonKey}
-                  ></Button>
-                );
-              })
-            : null}
+      <div className={`${this.state.theme}`} id="AppContainer">
+        <div id="App">
+          <Output
+            className={`${this.state.theme} output`}
+            value={this.state.valueToDisplay}
+            isSciMode={this.state.isSciMode}
+            onChangeMode={this.toggleMode}
+            onThemeChange={this.onThemeChange}
+            isDarkTheme={this.state.theme === "dark"}
+          ></Output>
+          <div className="buttonsContainer">
+            {[this.renderAllButtons(BUTTON_GOUPS)]}
+            {this.state.isSciMode
+              ? SCIENTIFIC_MODE_BUTTONS.map((buttonObj) => {
+                  const buttonKey = Object.keys(buttonObj)[0];
+                  return (
+                    <Button
+                      label={buttonKey}
+                      onClick={this.onSpacialOperatorClick}
+                      className={`${this.state.theme} button`}
+                      key={buttonKey}
+                      value={buttonKey}
+                    ></Button>
+                  );
+                })
+              : null}
+          </div>
         </div>
       </div>
     );
