@@ -9,7 +9,7 @@ const OPERATIOR_BUTTONS = {
   "/": (a, b) => a / b,
   "=": (a, b) => b,
   sign: (a, b) => -b,
-  sq: (a, b) => b * b,
+  sqr: (a, b) => b * b,
   sqrt: (a, b) => Math.sqrt(b),
 };
 const BUTTON_GOUPS = [
