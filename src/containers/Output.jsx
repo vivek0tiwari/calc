@@ -9,7 +9,7 @@ export const Output = ({ value, className, isSciMode, onChangeMode }) => {
         onChange={onChangeMode}
         name="mode"
       ></input>
-      <label> Change Mode</label>
+      <label> Scientific Mode</label>
       <input
         type="text"
         disabled
