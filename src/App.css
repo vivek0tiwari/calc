@@ -54,3 +54,7 @@ button:active {
   justify-content: start;
   flex-wrap: wrap;
 }
+
+.themeButtonContainer {
+  justify-content: flex-end;
+}

@@ -135,14 +135,17 @@ export default class App extends PureComponent {
     const { isSciMode } = this.state;
     this.setState({ isSciMode: !isSciMode });
   };
-  onThemeChange = (e) => {
-    const { theme } = this.state;
-    this.setState({ theme: theme === "light" ? "dark" : "light" });
+  onThemeChange = (e, theme) => {
+    this.setState({ theme: theme });
   };
   render() {
     return (
       <div className={`${this.state.theme}`} id="AppContainer">
         <div id="App">
+          <div className="buttonsContainer themeButtonContainer">
+            {this.renderButton("light", this.onThemeChange)}
+            {this.renderButton("dark", this.onThemeChange)}
+          </div>
           <Output
             className={`${this.state.theme} output`}
             value={this.state.valueToDisplay}
